@@ -1,0 +1,1 @@
+web: gunicorn MachineLearningService.wsgi --log-file -
