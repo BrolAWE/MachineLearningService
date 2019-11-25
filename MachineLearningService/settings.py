@@ -25,7 +25,7 @@ SECRET_KEY = 'm-w9!=d+7c*z^x%^7bplzt7)*dti*3k^$!zv#isrhp+lq3@^)$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'machinelearningservice.herokuapp.com']
 
 
 # Application definition
