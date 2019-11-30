@@ -3,6 +3,10 @@ from django.shortcuts import render
 import numpy as np
 
 from django.views.decorators.csrf import csrf_exempt
+from neupy.algorithms import PNN
+from sklearn.cluster import KMeans
+from sklearn.model_selection import GridSearchCV
+from sklearn.neighbors import KNeighborsClassifier
 from spyne import Float
 from spyne.application import Application
 from spyne.decorator import rpc
@@ -14,27 +18,14 @@ from spyne.service import ServiceBase
 # Create your views here.
 from sklearn.linear_model import LinearRegression
 from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 
-x_train = np.array([
-    [1, 10, 20170530, 10],
-    [2, 120, 20170530, 10],
-    [3, 300, 20170530, 10],
-    [1, 16, 20170630, 11],
-    [2, 130, 20170630, 11],
-    [3, 320, 20170630, 11],
-    [1, 20, 20170730, 12],
-    [2, 142, 20170730, 12],
-    [3, 340, 20170730, 12],
-    [1, 25, 20170830, 13],
-    [2, 150, 20170830, 13],
-    [3, 330, 20170830, 13],
-    [1, 20, 20170930, 14],
-    [2, 110, 20170930, 14],
-    [3, 360, 20170930, 14],
-])
-
-y_train = np.array([30, 160, 600, 32, 172, 600, 34, 169, 660, 36, 180, 700, 38, 150, 700])
+titanic_data = pd.read_csv('train.csv')
+X_train = titanic_data.drop(['PassengerId', 'Survived', 'Name', 'Ticket', 'Cabin'], axis=1)
+X_train = pd.get_dummies(X_train)
+X_train = X_train.fillna({'Age': X_train.Age.median()})
+y_train = titanic_data.Survived
 
 
 def index(request):
@@ -43,10 +34,12 @@ def index(request):
     X = pd.get_dummies(X)
     X = X.fillna({'Age': X.Age.median()})
     y = titanic_data.Survived
-    clf = tree.DecisionTreeClassifier(criterion='entropy', max_depth=3)
-    clf.fit(X, y)
+    clf_rf = RandomForestClassifier()
+    parametrs = {'n_estimators': [10, 20, 30], 'max_depth': [2, 5, 7, 10]}
+    grid_search_cv_clf = GridSearchCV(clf_rf, parametrs, cv=5)
+    grid_search_cv_clf.fit(X, y)
     X_predict = np.array([[3, 22, 1, 0, 7, 0, 1, 0, 0, 1]])
-    y_predict = clf.predict(X_predict)
+    y_predict = grid_search_cv_clf.predict(X_predict)
     print(X.iloc[0])
     return HttpResponse(y_predict)
 
@@ -59,7 +52,7 @@ def regr(request):
     X_test = np.array([[p1, p2, p3, p4]])
 
     clf = LinearRegression()
-    clf.fit(x_train, y_train)
+    clf.fit(X_train, y_train)
     y_pred = clf.predict(X_test)
 
     return HttpResponse(y_pred)
@@ -74,28 +67,81 @@ class SoapService(ServiceBase):
     def sum(ctx, a, b):
         return int(a + b)
 
-    @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False), _returns=Float)
-    def regr(ctx, p1, p2, p3, p4):
-        X_test = np.array([[p1, p2, p3, p4]])
-        Y_test = np.array([4])
-
-        clf = LinearRegression()
-        clf.fit(x_train, y_train)
-        y_pred = clf.predict(X_test)
-
-        return float(y_pred)
+    # Решающие деревья (Классификация)
 
     @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), _returns=Float)
     def tree(ctx, Pclass, Age, SibSp, Parch, Fare, Sex_female, Sex_male, Embarked_C, Embarked_Q, Embarked_S):
-        titanic_data = pd.read_csv('train.csv')
-        X = titanic_data.drop(['PassengerId', 'Survived', 'Name', 'Ticket', 'Cabin'], axis=1)
-        X = pd.get_dummies(X)
-        X = X.fillna({'Age': X.Age.median()})
-        y = titanic_data.Survived
-        clf = tree.DecisionTreeClassifier(criterion='entropy', max_depth=3)
-        clf.fit(X, y)
+        clf = tree.DecisionTreeClassifier(criterion='entropy', max_depth=3, min_samples_split=100, min_samples_leaf=10)
+        clf.fit(X_train, y_train)
+        X_test = np.array([[Pclass, Age, SibSp, Parch, Fare, Sex_female, Sex_male, Embarked_C, Embarked_Q, Embarked_S]])
+        y_predict = clf.predict(X_test)
+
+        return float(y_predict)
+
+    # Ансамбль решающих деревьев
+
+    @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
+         Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
+         Float(nillable=False), Float(nillable=False), _returns=Float)
+    def tree_ensemble(ctx, Pclass, Age, SibSp, Parch, Fare, Sex_female, Sex_male, Embarked_C, Embarked_Q, Embarked_S):
+        clf_rf = RandomForestClassifier()
+        parametrs = {'n_estimators': [10, 20, 30], 'max_depth': [2, 5, 7, 10]}
+        grid_search_cv_clf = GridSearchCV(clf_rf, parametrs, cv=5)
+        grid_search_cv_clf.fit(X_train, y_train)
+        X_test = np.array([[Pclass, Age, SibSp, Parch, Fare, Sex_female, Sex_male, Embarked_C, Embarked_Q, Embarked_S]])
+        y_predict = grid_search_cv_clf.predict(X_test)
+
+        return float(y_predict)
+
+    # Линейная регрессия
+
+    @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
+         Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
+         Float(nillable=False), Float(nillable=False), _returns=Float)
+    def regr(ctx, Pclass, Age, SibSp, Parch, Fare, Sex_female, Sex_male, Embarked_C, Embarked_Q, Embarked_S):
+        clf = LinearRegression()
+        clf.fit(X_train, y_train)
+        X_test = np.array([[Pclass, Age, SibSp, Parch, Fare, Sex_female, Sex_male, Embarked_C, Embarked_Q, Embarked_S]])
+        y_predict = clf.predict(X_test)
+
+        return float(y_predict)
+
+    # Ближайший сосед
+
+    @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
+         Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
+         Float(nillable=False), Float(nillable=False), _returns=Float)
+    def neighbors(ctx, Pclass, Age, SibSp, Parch, Fare, Sex_female, Sex_male, Embarked_C, Embarked_Q, Embarked_S):
+        clf = KNeighborsClassifier(n_neighbors=3, weights="distance")
+        clf.fit(X_train, y_train)
+        X_test = np.array([[Pclass, Age, SibSp, Parch, Fare, Sex_female, Sex_male, Embarked_C, Embarked_Q, Embarked_S]])
+        y_predict = clf.predict(X_test)
+
+        return float(y_predict)
+
+    # Кластеризация
+
+    @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
+         Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
+         Float(nillable=False), Float(nillable=False), _returns=Float)
+    def neighbors(ctx, Pclass, Age, SibSp, Parch, Fare, Sex_female, Sex_male, Embarked_C, Embarked_Q, Embarked_S):
+        clf = KMeans(n_clusters=2)
+        clf.fit(X_train, y_train)
+        X_test = np.array([[Pclass, Age, SibSp, Parch, Fare, Sex_female, Sex_male, Embarked_C, Embarked_Q, Embarked_S]])
+        y_predict = clf.predict(X_test)
+
+        return float(y_predict)
+
+    # Вероятностная нейронная сеть
+
+    @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
+         Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
+         Float(nillable=False), Float(nillable=False), _returns=Float)
+    def neuro(ctx, Pclass, Age, SibSp, Parch, Fare, Sex_female, Sex_male, Embarked_C, Embarked_Q, Embarked_S):
+        clf = PNN(verbose=False, std=10)
+        clf.fit(X_train, y_train)
         X_test = np.array([[Pclass, Age, SibSp, Parch, Fare, Sex_female, Sex_male, Embarked_C, Embarked_Q, Embarked_S]])
         y_predict = clf.predict(X_test)
 
@@ -104,7 +150,7 @@ class SoapService(ServiceBase):
 
 soap_app = Application(
     [SoapService],
-    tns='django.soap.example',
+    tns='django.soap.machinelearningservice',
     in_protocol=Soap11(validator='lxml'),
     out_protocol=Soap11(),
 )
