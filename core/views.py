@@ -3,6 +3,7 @@ from django.shortcuts import render
 import numpy as np
 
 from django.views.decorators.csrf import csrf_exempt
+from spyne import Float
 from spyne.application import Application
 from spyne.decorator import rpc
 from spyne.model.primitive import Unicode, Integer
@@ -54,13 +55,24 @@ def regr(request):
 
 
 class SoapService(ServiceBase):
-    @rpc(Unicode(nillable=False), _returns=Unicode)
-    def hello(ctx, name):
-        return 'Hello, {}'.format(name)
+    @rpc(Unicode(nillable=False), Unicode(nillable=False), _returns=Unicode)
+    def hello(ctx, name1, name2):
+        return name1 + " " + name2
 
     @rpc(Integer(nillable=False), Integer(nillable=False), _returns=Integer)
     def sum(ctx, a, b):
         return int(a + b)
+
+    @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False), _returns=Float)
+    def regr(ctx, p1, p2, p3, p4):
+        X_test = np.array([[p1, p2, p3, p4]])
+        Y_test = np.array([40])
+
+        clf = LinearRegression()
+        clf.fit(x_train, y_train)
+        y_pred = clf.predict(X_test)
+
+        return float(y_pred)
 
 
 soap_app = Application(
