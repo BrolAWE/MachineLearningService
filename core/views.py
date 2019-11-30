@@ -57,7 +57,7 @@ def regr(request):
 class SoapService(ServiceBase):
     @rpc(Unicode(nillable=False), Unicode(nillable=False), _returns=Unicode)
     def hello(ctx, name1, name2):
-        return name1 + " " + name2
+        return name1 + "," + name2
 
     @rpc(Integer(nillable=False), Integer(nillable=False), _returns=Integer)
     def sum(ctx, a, b):
