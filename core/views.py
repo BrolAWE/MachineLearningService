@@ -13,6 +13,8 @@ from spyne.service import ServiceBase
 
 # Create your views here.
 from sklearn.linear_model import LinearRegression
+from sklearn import tree
+import pandas as pd
 
 x_train = np.array([
     [1, 10, 20170530, 10],
@@ -36,7 +38,17 @@ y_train = np.array([30, 160, 600, 32, 172, 600, 34, 169, 660, 36, 180, 700, 38, 
 
 
 def index(request):
-    return HttpResponse("Привет")
+    titanic_data = pd.read_csv('train.csv')
+    X = titanic_data.drop(['PassengerId', 'Survived', 'Name', 'Ticket', 'Cabin'], axis=1)
+    X = pd.get_dummies(X)
+    X = X.fillna({'Age': X.Age.median()})
+    y = titanic_data.Survived
+    clf = tree.DecisionTreeClassifier(criterion='entropy', max_depth=3)
+    clf.fit(X, y)
+    X_predict = np.array([[3, 22, 1, 0, 7, 0, 1, 0, 0, 1]])
+    y_predict = clf.predict(X_predict)
+    print(X.iloc[0])
+    return HttpResponse(y_predict)
 
 
 def regr(request):
@@ -45,7 +57,6 @@ def regr(request):
     p3 = float(request.GET['p3'])
     p4 = float(request.GET['p4'])
     X_test = np.array([[p1, p2, p3, p4]])
-    Y_test = np.array([40])
 
     clf = LinearRegression()
     clf.fit(x_train, y_train)
@@ -66,13 +77,29 @@ class SoapService(ServiceBase):
     @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False), _returns=Float)
     def regr(ctx, p1, p2, p3, p4):
         X_test = np.array([[p1, p2, p3, p4]])
-        Y_test = np.array([40])
+        Y_test = np.array([4])
 
         clf = LinearRegression()
         clf.fit(x_train, y_train)
         y_pred = clf.predict(X_test)
 
         return float(y_pred)
+
+    @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
+         Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
+         Float(nillable=False), Float(nillable=False), _returns=Float)
+    def tree(ctx, Pclass, Age, SibSp, Parch, Fare, Sex_female, Sex_male, Embarked_C, Embarked_Q, Embarked_S):
+        titanic_data = pd.read_csv('train.csv')
+        X = titanic_data.drop(['PassengerId', 'Survived', 'Name', 'Ticket', 'Cabin'], axis=1)
+        X = pd.get_dummies(X)
+        X = X.fillna({'Age': X.Age.median()})
+        y = titanic_data.Survived
+        clf = tree.DecisionTreeClassifier(criterion='entropy', max_depth=3)
+        clf.fit(X, y)
+        X_test = np.array([[Pclass, Age, SibSp, Parch, Fare, Sex_female, Sex_male, Embarked_C, Embarked_Q, Embarked_S]])
+        y_predict = clf.predict(X_test)
+
+        return float(y_predict)
 
 
 soap_app = Application(
