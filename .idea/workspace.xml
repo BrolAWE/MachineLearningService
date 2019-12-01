@@ -19,8 +19,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/core/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1190">
-              <caret line="142" column="16" selection-start-line="142" selection-start-column="16" selection-end-line="142" selection-end-column="16" />
+            <state relative-caret-position="155">
+              <caret line="38" column="61" lean-forward="true" selection-start-line="38" selection-start-column="61" selection-end-line="38" selection-end-column="61" />
               <folding>
                 <element signature="e#0#36#0" expanded="true" />
               </folding>
@@ -214,12 +214,12 @@
       <workItem from="1574695677923" duration="509000" />
       <workItem from="1575103688858" duration="7810000" />
       <workItem from="1575136176804" duration="13058000" />
-      <workItem from="1575184109840" duration="297000" />
+      <workItem from="1575184109840" duration="2102000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="27108000" />
+    <option name="totallyTimeSpent" value="28913000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="878" extended-state="6" />
@@ -239,7 +239,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.21552879" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.21552879" />
       <window_info anchor="bottom" id="Python Console" order="12" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -280,8 +280,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/core/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1190">
-          <caret line="142" column="16" selection-start-line="142" selection-start-column="16" selection-end-line="142" selection-end-column="16" />
+        <state relative-caret-position="155">
+          <caret line="38" column="61" lean-forward="true" selection-start-line="38" selection-start-column="61" selection-end-line="38" selection-end-column="61" />
           <folding>
             <element signature="e#0#36#0" expanded="true" />
           </folding>
