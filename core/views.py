@@ -36,11 +36,11 @@ class SoapService(ServiceBase):
     @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), _returns=Float)
-    def tree(self, p_class, age, sib_sp, parch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
+    def tree(self, p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
         clf = tree.DecisionTreeClassifier(criterion='entropy', max_depth=3, min_samples_split=100, min_samples_leaf=10)
         clf.fit(X_train, y_train)
         x_test = np.array(
-            [[p_class, age, sib_sp, parch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s]])
+            [[p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s]])
         y_predict = clf.predict(x_test)
 
         return float(y_predict)
@@ -50,14 +50,14 @@ class SoapService(ServiceBase):
     @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), _returns=Float)
-    def tree_ensemble(self, p_class, age, sib_sp, parch, fare, sex_female, sex_male, embarked_c, embarked_q,
+    def tree_ensemble(self, p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q,
                       embarked_s):
         clf_rf = RandomForestClassifier()
         parametrs = {'n_estimators': [10, 20, 30], 'max_depth': [2, 5, 7, 10]}
         grid_search_cv_clf = GridSearchCV(clf_rf, parametrs, cv=5)
         grid_search_cv_clf.fit(X_train, y_train)
         x_test = np.array(
-            [[p_class, age, sib_sp, parch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s]])
+            [[p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s]])
         y_predict = grid_search_cv_clf.predict(x_test)
 
         return float(y_predict)
@@ -67,11 +67,11 @@ class SoapService(ServiceBase):
     @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), _returns=Float)
-    def regression(self, p_class, age, sib_sp, parch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
+    def regression(self, p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
         clf = LinearRegression()
         clf.fit(X_train, y_train)
         x_test = np.array(
-            [[p_class, age, sib_sp, parch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s]])
+            [[p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s]])
         y_predict = clf.predict(x_test)
 
         return float(y_predict)
@@ -81,11 +81,11 @@ class SoapService(ServiceBase):
     @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), _returns=Float)
-    def neighbors(self, p_class, age, sib_sp, parch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
+    def neighbors(self, p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
         clf = KNeighborsClassifier(n_neighbors=3, weights="distance")
         clf.fit(X_train, y_train)
         x_test = np.array(
-            [[p_class, age, sib_sp, parch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s]])
+            [[p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s]])
         y_predict = clf.predict(x_test)
 
         return float(y_predict)
@@ -95,11 +95,11 @@ class SoapService(ServiceBase):
     @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), _returns=Float)
-    def neighbors(self, p_class, age, sib_sp, parch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
+    def neighbors(self, p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
         clf = KMeans(n_clusters=2)
         clf.fit(X_train, y_train)
         x_test = np.array(
-            [[p_class, age, sib_sp, parch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s]])
+            [[p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s]])
         y_predict = clf.predict(x_test)
 
         return float(y_predict)
@@ -109,11 +109,11 @@ class SoapService(ServiceBase):
     @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), _returns=Float)
-    def neuro(self, p_class, age, sib_sp, parch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
+    def neuro(self, p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
         clf = PNN(verbose=False, std=10)
         clf.fit(X_train, y_train)
         x_test = np.array(
-            [[p_class, age, sib_sp, parch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s]])
+            [[p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s]])
         y_predict = clf.predict(x_test)
 
         return float(y_predict)
