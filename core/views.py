@@ -95,7 +95,7 @@ class SoapService(ServiceBase):
     @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), _returns=Float)
-    def neighbors(self, p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
+    def ml(self, p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
         clf = KMeans(n_clusters=2)
         clf.fit(X_train, y_train)
         x_test = np.array(
