@@ -14,7 +14,7 @@ from spyne.server.django import DjangoApplication
 from spyne.service import ServiceBase
 
 # Create your views here.
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LogisticRegression
 from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
@@ -62,13 +62,13 @@ class SoapService(ServiceBase):
 
         return float(y_predict)
 
-    # Линейная регрессия
+    # Логистическая регрессия
 
     @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), _returns=Float)
     def regression(self, p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
-        clf = LinearRegression()
+        clf = LogisticRegression()
         clf.fit(X_train, y_train)
         x_test = np.array(
             [[p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s]])
