@@ -19,11 +19,13 @@ from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 
-titanic_data = pd.read_csv('train.csv')
-X_train = titanic_data.drop(['PassengerId', 'Survived', 'Name', 'Ticket', 'Cabin'], axis=1)
+from core.models import Train
+
+titanic_data = pd.DataFrame(list(Train.objects.all().values()))
+X_train = titanic_data.drop(['passenger_id', 'survived', 'name', 'ticket', 'cabin'], axis=1)
 X_train = pd.get_dummies(X_train)
-X_train = X_train.fillna({'Age': X_train.Age.median()})
-y_train = titanic_data.Survived
+X_train = X_train.fillna({'age': X_train.age.median()})
+y_train = titanic_data.survived
 
 
 def index(request):
