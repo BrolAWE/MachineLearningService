@@ -55,8 +55,8 @@ class SoapService(ServiceBase):
     def tree_ensemble(self, p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q,
                       embarked_s):
         clf_rf = RandomForestClassifier()
-        parametrs = {'n_estimators': [10, 20, 30], 'max_depth': [2, 5, 7, 10]}
-        grid_search_cv_clf = GridSearchCV(clf_rf, parametrs, cv=5)
+        parameters = {'n_estimators': [10, 20, 30], 'max_depth': [2, 5, 7, 10]}
+        grid_search_cv_clf = GridSearchCV(clf_rf, parameters, cv=5)
         grid_search_cv_clf.fit(X_train, y_train)
         x_test = np.array(
             [[p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s]])
@@ -111,7 +111,7 @@ class SoapService(ServiceBase):
     @rpc(Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), Float(nillable=False), Float(nillable=False),
          Float(nillable=False), Float(nillable=False), _returns=Float)
-    def neuro(self, p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
+    def neuron(self, p_class, age, sib_sp, par_ch, fare, sex_female, sex_male, embarked_c, embarked_q, embarked_s):
         clf = PNN(verbose=False, std=10)
         clf.fit(X_train, y_train)
         x_test = np.array(
@@ -123,7 +123,7 @@ class SoapService(ServiceBase):
 
 soap_app = Application(
     [SoapService],
-    tns='django.soap.machinelearningservice',
+    tns='django.soap.machine_learning_service',
     in_protocol=Soap11(validator='lxml'),
     out_protocol=Soap11(),
 )
