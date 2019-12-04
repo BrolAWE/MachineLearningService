@@ -25,6 +25,7 @@ titanic_data = pd.DataFrame(list(Train.objects.all().values()))
 X_train = titanic_data.drop(['passenger_id', 'survived', 'name', 'ticket', 'cabin'], axis=1)
 X_train = pd.get_dummies(X_train)
 X_train = X_train.fillna({'age': X_train.age.median()})
+X_train = X_train.drop(['embarked_'], axis=1)
 y_train = titanic_data.survived
 
 
