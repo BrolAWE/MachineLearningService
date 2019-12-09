@@ -22,5 +22,5 @@ from core import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name="index"),
-    url(r'^soap_service/', views.my_soap_application),
+    path('soap_service/', views.my_soap_application),
 ]
